@@ -48,14 +48,14 @@ int main() {
 
   cout << "The game ended as follows: " << status_description(result) << endl;
 
-  // cout << "=================== Bonus Challenge ====================" << endl << endl;
+  cout << "=================== Bonus Challenge ====================" << endl << endl;
 
-  // char answer[512];
-  // strcpy(left, "MMMCCCB");
-  // if (find_solution(left, answer)==VALID_GOAL_STATE)
-  //   cout << "Solution is " << answer << endl;
-  // else
-  //   cout << "Solution does not exist." << endl;
+  char answer[512];
+  strcpy(left, "MMMCCCB");
+  if (find_solution(left, answer)==VALID_GOAL_STATE)
+    cout << "Solution is " << answer << endl;
+  else
+    cout << "Solution does not exist." << endl;
 
   return 0;
 }

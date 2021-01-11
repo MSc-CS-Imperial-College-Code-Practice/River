@@ -289,36 +289,59 @@ Status play_game(){
   return status;
 }
 
-// Status find_solution(char* left, char* answer){
+Status find_solution(char* left, char* answer){
 
-//   const char* target_options[]={"M","C","MM","CC","MC"};
+  char *states_used[100];
+  for (int i=0; i < 100; i++){
+    states_used[i]=NULL;
+  }
+  answer[0] ='\0';
+  add_string_to_array(states_used, left);
+  if(!find_solution_util(left, answer, states_used))
+    return ERROR_BONUS_NO_SOLUTION;
+  return VALID_GOAL_STATE;
+}
 
-//   // Base Case
-//   if (strcmp(left,"") == 0)
-//     return VALID_GOAL_STATE;
+bool find_solution_util(char* left, char* answer, char **states_used){
 
-//   // Recursive Case
+  const char* target_options[]={"M","C","MM","CC","MC"};
 
-//   Status result;
-//   char temp_1[10];
-//   char temp_2[512];
+  // Base Case -> Deadlock
+  if (is_state_repeated(states_used))
+    return false;
 
-//   for (int i = 0; i < 5; i++){
-//     strcpy(temp_1,left);
-//     strcpy(temp_2,answer);
-//     result=perform_crossing_no_print(left, target_options[i]);
-//     if (result == VALID_NON_GOAL_STATE || result == VALID_GOAL_STATE){
-//       strcat(answer,target_options[i]);
-//       strcat(answer,",");
-//       find_solution(left,answer);
-//       strcpy(left,temp_1);
-//       strcpy(answer,temp_2);
-//     }
+  // Recursive Case
+  Status result;
+  char temp_1[10];
+  char temp_2[512];
+  for (int i = 0; i < 5; i++){
+    strcpy(temp_1,left);
+    strcpy(temp_2,answer);
     
-//   }
+    result=perform_crossing_no_print(left, target_options[i]);
 
-//   return ERROR_BONUS_NO_SOLUTION;
-// }
+    // problem solved
+    if (strcmp(left,"") == 0) {
+      answer[strlen(answer)-1]='\0';
+      return true;
+    }
+    
+    add_string_to_array(states_used, left);
+    strcat(answer,target_options[i]);
+    strcat(answer,",");
+    if(result == VALID_NON_GOAL_STATE){
+      if(find_solution_util(left,answer,states_used)){
+        return true;
+      }
+    }
+    // Bactracking
+    remove_string_from_array(states_used, left);
+    strcpy(answer,temp_2);
+    strcpy(left,temp_1);  
+  }
+
+  return false;
+}
 
 Status perform_crossing_no_print(char* left, const char* target){
 
@@ -405,6 +428,16 @@ Status perform_crossing_no_print(char* left, const char* target){
   return VALID_NON_GOAL_STATE;
 }
 
+bool is_state_repeated(char** states_used){
+  for (int i = 0; states_used[i] != NULL; i++){
+    for (int j = i+1; states_used[j] != NULL; j++){
+      if(strcmp(states_used[i],states_used[j])==0)
+        return true;
+    }
+  }
+  return false;
+}
+
 int number_of_individuals(const char* input, char individual){
   
   int counter = 0;
@@ -430,10 +463,11 @@ void remove_char(char * str, const char chr){
   int i = 0;
   int j;
   bool ocurrence = false;
-  while(i<strlen(str)){
+  int length = strlen(str);
+  while(i<length){
       if(str[i]==chr && !ocurrence){
           j = i;
-          while(j < strlen(str)){
+          while(j < length){
               str[j] = str[j+1];
               j++;
           }
@@ -442,10 +476,58 @@ void remove_char(char * str, const char chr){
       }
       i++;
   }
+
 }
 
-void add_char(char * str, const char chr){
-    
-  str[strlen(str)] = chr;
-  str[strlen(str)+1] = '\0';
+void add_char(char *str, const char chr){
+  
+  int length = strlen(str);
+  str[length] = chr;
+  str[length+1] = '\0';
+}
+
+void sort_chars_in_string(char* str){
+  char temp;
+	for(int i=0;i<strlen(str)-1;i++) {
+		for(int j = i+1;j<strlen(str);j++) {
+			if(str[i] < str[j]){
+				temp = str[i];
+				str[i] = str[j];
+				str[j] = temp;
+			}
+		}
+	}
+}
+
+void add_string_to_array(char **array, char* str){
+
+  sort_chars_in_string(str);
+  int i = 0;
+  int lenght;
+  char *new_string = new char[512];
+  while(array[i] != NULL)
+    i++;
+  lenght = i;
+  
+  strcpy(new_string,str);
+  array[lenght] = new_string;
+  array[lenght+1] = NULL;
+}
+
+void remove_string_from_array(char **array, char* str){
+  int i = 0;
+  int j;
+  int lenght;
+  while(array[i] != NULL){
+    if(strcmp(array[i],str)==0)
+      j = i;
+    i++;
+  }
+  lenght = i;
+
+  delete array[j];
+  for (int k = j; k < lenght-1; k++){
+    array[k] = array[k+1];
+  }
+  array[lenght-1] = NULL;
 }

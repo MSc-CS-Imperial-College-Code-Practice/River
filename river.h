@@ -25,13 +25,22 @@ char **make_river_scene(const char* left, const char* boat);
 Status perform_crossing(char* left, const char* target);
 Status play_game();
 Status find_solution(char* left, char* answer);
+bool find_solution_util(char* left, char* answer, char** states_used);
+void sort_chars_in_string(char* str);
 
 
 int number_of_individuals(const char* input, char individuals);
 bool is_boat_at_right(const char* input);
-void remove_char(char* string, char letter);
-void add_char(char* string, char letter);
+
 bool is_crossing_valid(char* left, const char* target);
 bool find_solution_util(char* left, char* answer);
 Status perform_crossing_no_print(char* left, const char* target);
+bool is_state_repeated(char **states_used);
+
+
+
+void add_string_to_array(char **array, char* str);
+void remove_string_from_array(char **array, char* str);
+void remove_char(char* string, char letter);
+void add_char(char* string, char letter);
 
