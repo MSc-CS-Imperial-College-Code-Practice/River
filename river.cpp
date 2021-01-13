@@ -319,6 +319,8 @@ bool find_solution_util(char* left, char* answer, char **states_used){
     strcpy(temp_2,answer);
     
     result=perform_crossing_no_print(left, target_options[i]);
+    strcat(answer,target_options[i]);
+    strcat(answer,",");
 
     // problem solved
     if (strcmp(left,"") == 0) {
@@ -327,8 +329,7 @@ bool find_solution_util(char* left, char* answer, char **states_used){
     }
     
     add_string_to_array(states_used, left);
-    strcat(answer,target_options[i]);
-    strcat(answer,",");
+
     if(result == VALID_NON_GOAL_STATE){
       if(find_solution_util(left,answer,states_used)){
         return true;
